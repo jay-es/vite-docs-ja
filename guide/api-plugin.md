@@ -1,33 +1,33 @@
-# Plugin API
+# プラグイン API
 
-Vite plugins extends Rollup's well-designed plugin interface with a few extra Vite-specific options. As a result, you can write a Vite plugin once and have it work for both dev and build.
+Vite プラグインは、Rollup の優れた設計のプラグインインターフェースを Vite 特有のオプションで拡張しています。その結果、Vite プラグインを一度作成すれば、開発とビルドの両方で動作させることができます。
 
-**It is recommended to go through [Rollup's plugin documentation](https://rollupjs.org/guide/en/#plugin-development) first before reading the sections below.**
+**以下のセクションを読む前に、まず [Rollup のプラグインドキュメント](https://rollupjs.org/guide/en/#plugin-development)を読むことをお勧めします。**
 
-## Conventions
+## 規約
 
-If the plugin doesn't use Vite specific hooks and can be implemented as a [Compatible Rollup Plugin](#rollup-plugin-compatibility), then it is recommended to use the [Rollup Plugin naming conventions](https://rollupjs.org/guide/en/#conventions)
+プラグインが Vite 特有のフックを使用せず、[Rollup 互換のプラグイン](#rollup-plugin-compatibility)として実装できる場合は、[Rollup プラグインの命名規則](https://rollupjs.org/guide/en/#conventions)を使用することをお勧めします。
 
-- Rollup Plugins should have a clear name with `rollup-plugin-` prefix.
-- Include `rollup-plugin` and `vite-plugin` keywords in package.json.
+- Rollup プラグインは、`rollup-plugin-` のプレフィックスが付いた明確な名前を持つ必要があります。
+- package.json に `rollup-plugin` および `vite-plugin` キーワードを含めます。
 
-This exposes the plugin to be also used in pure Rollup or WMR based projects
+これにより、プラグインが公開され、純粋な Rollup または WMR ベースのプロジェクトでも使用できるようになります。
 
-For Vite only plugins
+Vite 専用プラグインの場合
 
-- Vite Plugins should have a clear name with `vite-plugin-` prefix.
-- Include `vite-plugin` keyword in package.json.
-- Include a section in the plugin docs detailing why it is a Vite only plugin (for example, it uses Vite specific plugin hooks).
+- Vite プラグインは、`vite-plugin-` のプレフィックスが付いた明確な名前を持つ必要があります。
+- package.json に `vite-plugin` キーワードを含めます。
+- プラグインのドキュメントに、Vite 専用プラグインになっている理由を詳しく説明するセクションを含める（例えば、Vite 特有のプラグインフックを使用するなど）。
 
-If your plugin is only going to work for a particular framework, its name should be included as part of the prefix
+プラグインが特定のフレームワークでしか動作しない場合は、その名前をプレフィックスの一部として含めるべきです。
 
-- `vite-plugin-vue-` prefix for Vue Plugins
-- `vite-plugin-react-` prefix for React Plugins
-- `vite-plugin-svelte-` prefix for Svelte Plugins
+- Vue プラグインには `vite-plugin-vue-` のプレフィックス
+- React プラグインには `vite-plugin-react-` のプレフィックス
+- Svelte プラグインには `vite-plugin-svelte-` のプレフィックス
 
-## Plugins config
+## プラグインの設定
 
-Users will add plugins to the project `devDependencies` and configure them using the `plugins` array option.
+ユーザーはプロジェクトの `devDependencies` にプラグインを追加し、 `plugins` 配列のオプションを使って設定します。
 
 ```js
 // vite.config.js
@@ -39,9 +39,9 @@ export default {
 }
 ```
 
-Falsy plugins will be ignored, which can be used to easily activate or deactivate plugins.
+falsy なプラグインは無視されます。これにより、プラグインを簡単に有効化・無効化できます。
 
-`plugins` also accept presets including several plugins as a single element. This is useful for complex features (like framework integration) that are implemented using several plugins. The array will be flattened internally.
+`plugins` は複数のプラグインを含むプリセットも単一の要素として受け入れます。これは複数のプラグインを使って実装された複雑な機能（フレームワーク統合など）に便利です。配列は内部的にフラット化されます。
 
 ```js
 // framework-plugin
@@ -62,20 +62,20 @@ export default {
 }
 ```
 
-## Simple Examples
+## シンプルな例
 
 :::tip
-It is common convention to author a Vite/Rollup plugin as a factory function that returns the actual plugin object. The function can accept options which allows users to customize the behavior of the plugin.
+Vite/Rollup プラグインは、実際のプラグインオブジェクトを返すファクトリー関数として作成するのが一般的です。この関数はユーザーがプラグインの動作をカスタマイズするためのオプションを受け付けます。
 :::
 
-### Importing a Virtual File
+### 仮想ファイルのインポート
 
 ```js
 export default function myPlugin() {
   const virtualFileId = '@my-virtual-file'
 
   return {
-    name: 'my-plugin', // required, will show up in warnings and errors
+    name: 'my-plugin', // 必須、警告やエラーで表示されます
     resolveId(id) {
       if (id === virtualFileId) {
         return virtualFileId
@@ -90,7 +90,7 @@ export default function myPlugin() {
 }
 ```
 
-Which allows importing the file in JavaScript:
+これにより、JavaScript でファイルをインポートできます:
 
 ```js
 import { msg } from '@my-virtual-file'
@@ -98,7 +98,7 @@ import { msg } from '@my-virtual-file'
 console.log(msg)
 ```
 
-### Transforming Custom File Types
+### カスタムファイルタイプの変換
 
 ```js
 const fileRegex = /\.(my-file-ext)$/
@@ -111,7 +111,7 @@ export default function myPlugin() {
       if (fileRegex.test(id)) {
         return {
           code: compileFileToJS(src),
-          map: null // provide source map if available
+          map: null // ソースマップがあれば提供する
         }
       }
     }
@@ -119,29 +119,29 @@ export default function myPlugin() {
 }
 ```
 
-## Universal Hooks
+## 共通のフック
 
-During dev, the Vite dev server creates a plugin container that invokes [Rollup Build Hooks](https://rollupjs.org/guide/en/#build-hooks) the same way Rollup does it.
+開発中、Vite 開発サーバーは、Rollup が行なうのと同じ方法で [Rollup ビルドフック](https://rollupjs.org/guide/en/#build-hooks)を呼び出すプラグインコンテナを作成します。
 
-The following hooks are called once on server start:
+以下のフックはサーバー起動時に一度だけ呼び出されます:
 
 - [`options`](https://rollupjs.org/guide/en/#options)
 - [`buildStart`](https://rollupjs.org/guide/en/#buildstart)
 
-The following hooks are called on each incoming module request:
+以下のフックはモジュールのリクエストが来るたびに呼び出されます:
 
 - [`resolveId`](https://rollupjs.org/guide/en/#resolveid)
 - [`load`](https://rollupjs.org/guide/en/#load)
 - [`transform`](https://rollupjs.org/guide/en/#transform)
 
-The following hooks are called when the server is closed:
+以下のフックはサーバーが閉じられる時に呼び出されます:
 
 - [`buildEnd`](https://rollupjs.org/guide/en/#buildend)
 - [`closeBundle`](https://rollupjs.org/guide/en/#closebundle)
 
-Note that the [`moduleParsed`](https://rollupjs.org/guide/en/#moduleparsed) hook is **not** called during dev, because Vite avoids full AST parses for better performance.
+Vite はパフォーマンスを向上させるために完全な AST のパースを避けるので、[`moduleParsed`](https://rollupjs.org/guide/en/#moduleparsed) フックは開発中には**呼び出されない**ことに注意してください。
 
-[Output Generation Hooks](https://rollupjs.org/guide/en/#output-generation-hooks) (except `closeBundle`) are **not** called during dev. You can think of Vite's dev server as only calling `rollup.rollup()` without calling `bundle.generate()`.
+[出力生成フック](https://rollupjs.org/guide/en/#output-generation-hooks)（`closeBundle` を除く）は開発中には**呼び出されません**。Vite の開発サーバーは `bundle.generate()` を呼び出さず、`rollup.rollup()` だけを呼び出していると考えることができます。
 
 ## Vite Specific Hooks
 
